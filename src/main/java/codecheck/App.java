@@ -2,9 +2,10 @@ package codecheck;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+
+import org.apache.http.entity.StringEntity;
+import org.apache.http.client.fluent.Request;
+import org.apache.http.client.fluent.Response;
 
 public class App {
 	public static void main(String[] args) {
@@ -13,7 +14,7 @@ public class App {
         try {
             response =
                 Request
-                .Get("http://localhost:8080/get?param=value")
+                .Get("http://challenge-server.code-check.io/")
                 .execute();
 
 
