@@ -2,6 +2,7 @@ package codecheck;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
@@ -24,14 +25,19 @@ public class App {
 		} else if (args[0] == null) {
 			System.out.println("Error!");
 		} else {
-			Charset charset = StandardCharsets.UTF_8;
-
-			HttpClient httpclient = HttpClients.createDefault();
-			HttpGet request = new HttpGet("http://challenge-server.code-check.io/api/hash?q=" + args[0]);
-
-			HttpResponse response = null;
-
 			try {
+				//UTF8でやり取り
+				Charset charset = StandardCharsets.UTF_8;
+				//inputをencoding
+				String encodedParam = URLEncoder.encode(args[0], "UTF-8");
+
+				//getなのでURLにパラメータ付与
+				HttpClient httpclient = HttpClients.createDefault();
+				HttpGet request = new HttpGet("http://challenge-server.code-check.io/api/hash?q=" + encodedParam);
+
+				HttpResponse response = null;
+
+				//アクセス
 				response = httpclient.execute(request);
 
 				int status = response.getStatusLine().getStatusCode();
@@ -58,6 +64,7 @@ public class App {
 
 	}
 
+	//JSON分解用の内部クラス
 	class TestApiDto {
 		String q;
 
