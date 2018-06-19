@@ -40,10 +40,8 @@ public class App {
 				//アクセス
 				response = httpclient.execute(request);
 
+				//ステータス確認して200なら結果取得
 				int status = response.getStatusLine().getStatusCode();
-				//System.out.println("HTTPステータス:" + status);
-				//HTTPステータス:200
-
 				if (status == HttpStatus.SC_OK) {
 					String responseData = EntityUtils.toString(response.getEntity(), charset);
 
