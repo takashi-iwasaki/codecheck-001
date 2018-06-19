@@ -27,7 +27,7 @@ public class App {
 			Charset charset = StandardCharsets.UTF_8;
 
 			HttpClient httpclient = HttpClients.createDefault();
-			HttpGet request = new HttpGet("http://challenge-server.code-check.io/&q=" + args[0]);
+			HttpGet request = new HttpGet("http://challenge-server.code-check.io/api/hash?q=" + args[0]);
 
 			HttpResponse response = null;
 
