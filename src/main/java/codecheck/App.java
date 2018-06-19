@@ -1,10 +1,31 @@
 package codecheck;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 public class App {
 	public static void main(String[] args) {
-		for (int i = 0, l = args.length; i < l; i++) {
-			String output = String.format("argv[%s]: %s", i, args[i]);
-			System.out.println(output);
-		}
+
+		Response response = null;
+        try {
+            response =
+                Request
+                .Get("http://localhost:8080/get?param=value")
+                .execute();
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (response != null) {
+                response.discardContent();
+            }
+        }
+
+        System.out.println("===== HTTP GET End =====");
+    }
 	}
 }
