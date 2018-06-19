@@ -1,80 +1,58 @@
 package codecheck;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-
-
-
-
 
 public class App {
 	public static void main(String[] args) {
 
-        executeGet();
-        executePost();
-    }
+		HttpURLConnection connection = null;
 
-    private static void executeGet() {
-        System.out.println("===== HTTP GET Start =====");
+		if (args == null) {
+			System.out.println("Error!");
+		} else if (args[0] == null) {
+			System.out.println("Error!");
+		} else {
+			try {
+				//URL 設定
+				URL url = new URL("http://challenge-server.code-check.io/");
 
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-        // もしくは
-        // try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
-            HttpGet getMethod = new HttpGet("http://localhost:8080/get?param=value");
+				connection = (HttpURLConnection) url.openConnection();
+				connection.setRequestProperty("p", args[0]);
+				connection.setRequestMethod("GET");
 
-            try (CloseableHttpResponse response = httpClient.execute(getMethod)) {
-                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                    HttpEntity entity = response.getEntity();
-                    System.out.println(EntityUtils.toString(entity,
-                                                            StandardCharsets.UTF_8));
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+				//結果がHTTP200であれば結果出力
+				int resultHttpStatusCode = connection.getResponseCode();
+				if (resultHttpStatusCode == HttpURLConnection.HTTP_OK) {
+					try (InputStreamReader isr = new InputStreamReader(connection.getInputStream(),
+							StandardCharsets.UTF_8);
+							BufferedReader reader = new BufferedReader(isr)) {
+						String resultString;
+						while ((resultString = reader.readLine()) != null) {
+							System.out.println(resultString);
+						}
+					}
+				} else if (resultHttpStatusCode == HttpURLConnection.HTTP_BAD_REQUEST) {
+					System.out.println("BAD REQUEST!");
+				} else {
 
-        System.out.println("===== HTTP GET End =====");
-    }
+				}
+				System.out.println("ERROR! HTTPSTATUS:" + resultHttpStatusCode);
 
-    private static void executePost() {
-        System.out.println("===== HTTP POST Start =====");
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				if (connection != null) {
+					connection.disconnect();
+				}
+			}
 
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-        // もしくは
-        // try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
-            HttpPost postMethod = new HttpPost("http://localhost:8080/post");
+		}
 
-            StringBuilder builder = new StringBuilder();
-            builder.append("POST Body");
-            builder.append("\r\n");
-            builder.append("Hello Http Server!!");
-            builder.append("\r\n");
-
-            postMethod.setEntity(new StringEntity(builder.toString(),
-                                                  StandardCharsets.UTF_8));
-
-            try (CloseableHttpResponse response = httpClient.execute(postMethod)) {
-                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                    HttpEntity entity = response.getEntity();
-                    System.out.println(EntityUtils.toString(entity,
-                                                            StandardCharsets.UTF_8));
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("===== HTTP POST End =====");
-    }
+	}
 
 }
